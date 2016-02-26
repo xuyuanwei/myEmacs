@@ -1,0 +1,8 @@
+cut:   ctrl+w
+copy:  alt+w
+paste: ctrl+y
+
+ctrl+x RET r (change the detected encoding to force an other one and reload the file)
+ctrl+x RET f (see and change the current buffer encoding)
+
+ctrl+c p f find the file in the project(helm-projectile-find-file)
