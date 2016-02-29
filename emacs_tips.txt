@@ -9,3 +9,6 @@ ctrl+c p f find the file in the project(helm-projectile-find-file)
 
 
 cedet build in Windows: emacs.exe -Q -l cedet-build.el -f cedet-build ;;http://blog.csdn.net/PfanAya/article/details/6125569
+emacs中使用的包：
+1. cedet: 主要包括 ede,sematic,speedbar
+2. helm
