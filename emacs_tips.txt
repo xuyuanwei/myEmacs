@@ -6,3 +6,6 @@ ctrl+x RET r (change the detected encoding to force an other one and reload the 
 ctrl+x RET f (see and change the current buffer encoding)
 
 ctrl+c p f find the file in the project(helm-projectile-find-file)
+
+
+cedet build in Windows: emacs.exe -Q -l cedet-build.el -f cedet-build ;;http://blog.csdn.net/PfanAya/article/details/6125569
