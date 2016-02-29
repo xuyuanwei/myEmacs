@@ -1,6 +1,6 @@
 
 (load-file (concat user-emacs-directory "/plugins/cedet/cedet-devel-load.el"))
-(load-file (concat user-emacs-directory "/plugins/cedet/contrib/cedet-contrib-load.el"))
+;;(load-file (concat user-emacs-directory "/plugins/cedet/contrib/cedet-contrib-load.el"))
 
 (require 'package)
 (add-to-list 'package-archives
