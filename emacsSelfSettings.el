@@ -49,7 +49,7 @@
 ;; the center of the screen, but this can make the scrolling confusing
 
 (setq scroll-step 1)
-
+(setq scroll-conservatively 101)
 ;;
 ;; Emacs normally uses both tabs and spaces to indent lines. If you
 ;; prefer, all indentation can be made from spaces only. To request this,
@@ -99,3 +99,8 @@
 (setq auto-fill-mode nil)
 
 (global-linum-mode)
+(set-language-environment 'Chinese-GB)
+(set-buffer-file-coding-system 'cp936)
+
+(global-set-key (kbd "C-;") 'move-to-window-line-top-bottom)
+;;(global-unset-key (kbd "C-x c"))
