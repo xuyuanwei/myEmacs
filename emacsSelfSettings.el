@@ -99,8 +99,12 @@
 (setq auto-fill-mode nil)
 
 (global-linum-mode)
-(set-language-environment 'Chinese-GB)
+;;(set-language-environment 'English)
+;;(set-language-environment 'Chinese-GB18030)
+(setq prefer-coding-system 'utf-8)
+;;(setq prefer-coding-system 'cp936)
 (set-buffer-file-coding-system 'cp936)
 
 (global-set-key (kbd "C-;") 'move-to-window-line-top-bottom)
 ;;(global-unset-key (kbd "C-x c"))
+(tool-bar-mode -1)

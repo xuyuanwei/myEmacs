@@ -1,85 +1,7 @@
-;; http://alexott.net/en/writings/emacs-devenv/EmacsCedet.html
-;; http://www.randomsample.de/cedetdocs/cedet/index.html#Top
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (package-initialize)
-
-(load-file (concat user-emacs-directory "/plugins/cedet/cedet-devel-load.el"))
-;;(load-file (concat user-emacs-directory "/plugins/cedet/contrib/cedet-contrib-load.el"))
-
-(require 'cedet)
-(require 'cc-mode)
-(require 'semantic)
-(require 'semantic/ia)
-
-;; enables global support for Semanticdb
-(global-semanticdb-minor-mode 1)
-
-;; activates highlighting of first line for current tag (fucntion,class)
-(global-semantic-highlight-func-mode 1)
-;; activates highlighting of local names that are the same as same of tag under cursor
-(global-semantic-idle-local-symbol-highlight-mode 1)
-
-(semantic-mode 1)
-
-(require 'semantic/canned-configs)
-(semantic-load-enable-excessive-code-helpers)
-;; Increase the delay before activation
-(setq semantic-idle-scheduler-idle-time 10)
-;; Don't reparse really big buffers
-(setq semantic-idle-scheduler-max-buffer-size 100000)
-;; Increase the delay before doing slow work to 2 minutes.
-(setq semantic-idle-scheduler-work-idle-time 120)
-
-
-(define-key cedet-m3-mode-map "\C-c " 'cedet-m3-menu-kbd)
-
-;; #if condition
-(setq semantic-c-obey-conditional-section-parsing-flag 1)
-
-(defun alexott/cedet-hook ()
-  (local-set-key "\C-c\C-j" 'semantic-ia-fast-jump)
-  (local-set-key "\C-c\C-s" 'semantic-ia-show-summary))
-
-(add-hook 'c-mode-common-hook 'alexott/cedet-hook)
-(add-hook 'c-mode-hook 'alexott/cedet-hook)
-(add-hook 'c++-mode-hook 'alexott/cedet-hook)
-
-;; Enable EDE only in C/C++
-(require 'ede)
-(global-ede-mode 1)
-(ede-enable-generic-projects)
-
-;; use GNU Global
-(setq cedet-global-command "global")
-(when (cedet-gnu-global-version-check t)
-  ;; use gnu global as a back end for database search
-  (semanticdb-enable-gnu-global-databases 'c-mode)
-  ;; use global to accelerate finding files
-  (setq ede-locate-setup-options '(ede-locate-global ede-locate-base))
-  )
-;; use ID Utils
-;(when (cedet-idutils-version-check t)
-; (setq ede-locate-setup-options '(ede-locate-idutils ede-locate-base))
-; )
-
-;; use CScope
-;(when (cedet-cscope-version-check t)
-;  (setq ede-locate-setup-options '(ede-locate-cscope ede-locate-base))
-;  (semanticdb-enable-cscope-databases)
-;  )
-
-(require 'semantic/sb)
-
-;; enable the Seantor keymap in all modes that support semantic parsing 
-;;(add-hook 'semantic-init-hooks 'senator-minor-mode) not found
-
-(add-hook 'mode-hook
-          (lambda ()
-            (setq senator-step-at-tag-classes '(function))
-            (setq senator-step-at-start-end-tag-classes '(function))
-            ))
 
 (require 'helm)
 (require 'helm-config)
@@ -178,20 +100,83 @@
 
 (helm-mode 1)
 
-(require 'ggtags)
-(add-hook 'c-mode-common-hook
-          (lambda ()
-            (when (derived-mode-p 'c-mode 'c++-mode 'java-mode 'asm-mode)
-              (ggtags-mode 1))))
+(require 'helm-gtags)
 
-(define-key ggtags-mode-map (kbd "C-c g s") 'ggtags-find-other-symbol)
-(define-key ggtags-mode-map (kbd "C-c g h") 'ggtags-view-tag-history)
-(define-key ggtags-mode-map (kbd "C-c g r") 'ggtags-find-reference)
-(define-key ggtags-mode-map (kbd "C-c g f") 'ggtags-find-file)
-(define-key ggtags-mode-map (kbd "C-c g c") 'ggtags-create-tags)
-(define-key ggtags-mode-map (kbd "C-c g u") 'ggtags-update-tags)
+(setq
+ helm-gtags-ignore-case t
+ helm-gtags-auto-update t
+ helm-gtags-use-input-at-cursor t
+ helm-gtags-pulse-at-cursor t
+ helm-gtags-prefix-key "\C-cg"
+ helm-gtags-suggested-key-mapping t
+ )
 
-(define-key ggtags-mode-map (kbd "M-,") 'pop-tag-mark)
+;; Enable helm-gtags-mode in Dired so you can jump to any tag
+;; when navigate project tree with Dired
+(add-hook 'dired-mode-hook 'helm-gtags-mode)
+
+;; Enable helm-gtags-mode in Eshell for the same reason as above
+(add-hook 'eshell-mode-hook 'helm-gtags-mode)
+
+;; Enable helm-gtags-mode in languages that GNU Global supports
+(add-hook 'c-mode-hook 'helm-gtags-mode)
+(add-hook 'c++-mode-hook 'helm-gtags-mode)
+(add-hook 'java-mode-hook 'helm-gtags-mode)
+(add-hook 'asm-mode-hook 'helm-gtags-mode)
+
+;; key bindings
+(define-key helm-gtags-mode-map (kbd "C-c g a") 'helm-gtags-tags-in-this-function)
+(define-key helm-gtags-mode-map (kbd "C-c g r") 'helm-gtags-find-rtag)
+(define-key helm-gtags-mode-map (kbd "C-c g s") 'helm-gtags-find-symbol)
+(define-key helm-gtags-mode-map (kbd "C-c g u") 'helm-gtags-update-tags)
+(define-key helm-gtags-mode-map (kbd "C-c g c") 'helm-gtags-create-tags)
+(define-key helm-gtags-mode-map (kbd "C-c g f") 'helm-gtags-find-files)
+
+
+(define-key helm-gtags-mode-map (kbd "C-j") 'helm-gtags-select)
+(define-key helm-gtags-mode-map (kbd "M-.") 'helm-gtags-dwim)
+(define-key helm-gtags-mode-map (kbd "M-,") 'helm-gtags-pop-stack)
+(define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
+(define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history)
+
+(require 'projectile)
+(projectile-mode t)
+
+(require 'neotree)
+;; ref: https://www.emacswiki.org/emacs/NeoTree
+(add-hook 'neotree-mode-hook
+            (lambda ()
+              (define-key evil-normal-state-local-map (kbd "TAB") 'neotree-enter)
+              (define-key evil-normal-state-local-map (kbd "SPC") 'neotree-enter)
+              (define-key evil-normal-state-local-map (kbd "q") 'neotree-hide)
+              (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)))
+
+(setq projectile-switch-project-action 'neotree-projectile-action)
+
+;; company
+;(require 'company)
+;(add-hook 'after-init-hook 'global-company-mode)
+;(delete 'company-clang company-backends)
+;(add-to-list 'company-backends 'company-gtags)
+
+;; company-c-headers
+;(add-to-list 'company-backends 'company-c-headers)
+
+;(slime-setup '(slime-fancy slime-company))
+;(define-key company-active-map (kbd "\C-n") 'company-select-next)
+;(define-key company-active-map (kbd "\C-p") 'company-select-previous)
+;(define-key company-active-map (kbd "\C-d") 'company-show-doc-buffer)
+;(define-key company-active-map (kbd "M-.") 'company-show-location)
+
+(require 'evil)
+(evil-mode t)
+
+(require 'highlight)
+(require 'evil-search-highlight-persist)
+(global-evil-search-highlight-persist t)
+
+
+(ac-config-default)
 
 (load-file (concat user-emacs-directory "/emacsSelfSettings.el"))
 (custom-set-variables
@@ -204,9 +189,6 @@
  '(ansi-color-names-vector
    ["#2e3436" "#a40000" "#4e9a06" "#c4a000" "#204a87" "#5c3566" "#729fcf" "#eeeeec"])
  '(custom-enabled-themes (quote (tsdh-dark)))
- '(ede-project-directories
-   (quote
-    ("/home/cylinc/clfs/stm32/reference/Micrium_STM3220G-Eval_uCOS-II")))
  '(make-backup-files nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
