@@ -1,18 +1,77 @@
-
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (package-initialize)
 
+(global-hl-line-mode 1)
+(global-linum-mode 1)
+(column-number-mode 1)
+(global-highlight-changes-mode 1)
+(global-hi-lock-mode)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(setq inhibit-splash-screen t)
+(setq initial-scratch-message "")
+
+;(setq make-backup-files nil)
+(setq backup-directory-alist `((".*" . "~/.emacs.d/backup"))
+      auto-save-file-name-transforms `((".*" , "~/.emacs.d/backup" t)))
+
+(setq-default indent-tabs-mode nil)
+(show-paren-mode t)
+(delete-selection-mode t)
+
+
+(defun open-my-init-file()
+  (interactive)
+  (find-file "~/.emacs.d/init.el")
+  (message "init.el opened"))
+
+(global-set-key (kbd "<f2>") 'open-my-init-file)
+
+(defconst demo-packages
+  '(
+    company
+    monokai-theme
+    hungry-delete
+    helm
+    swiper
+    smartparens
+    projectile
+    neotree
+    undo-tree
+    which-key
+    expand-region
+    ;counsel
+))
+
+(defun install-packages ()
+  "Install all required packages."
+  (interactive)
+  (unless package-archive-contents
+    (package-refresh-contents))
+  (dolist (package demo-packages)
+    (unless (package-installed-p package)
+      (package-install package))))
+
+(install-packages)
+
+(load-theme 'monokai t)
+
+(add-to-list 'default-frame-alist
+	       '(font . "DejaVu Sans Mono-10"))
+(set-default-font "DejaVu Sans Mono-10")
+
+
+(require 'company)
+(global-company-mode 1)
+(setq company-idle-delay 0.1)
+
+(require 'hungry-delete)
+(hungry-delete-mode 1)
+
 (require 'helm)
 (require 'helm-config)
 (require 'helm-grep)
-
-;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
-;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
-;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
-(global-set-key (kbd "C-c h") 'helm-command-prefix)
-(global-unset-key (kbd "C-x c"))
-
 (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebihnd tab to do persistent action
 (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
 (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
@@ -21,84 +80,30 @@
 (define-key helm-grep-mode-map (kbd "n")  'helm-grep-mode-jump-other-window-forward)
 (define-key helm-grep-mode-map (kbd "p")  'helm-grep-mode-jump-other-window-backward)
 
-(when (executable-find "curl")
-  (setq helm-google-suggest-use-curl-p t))
-
 (setq
  helm-scroll-amount 4 ; scroll 4 lines other window using M-<next>/M-<prior>
  helm-ff-search-library-in-sexp t ; search for library in `require' and `declare-function' sexp.
  helm-split-window-in-side-p t ;; open helm buffer inside current window, not occupy whole other window
  helm-candidate-number-limit 500 ; limit the number of displayed canidates
  helm-ff-file-name-history-use-recentf t
- helm-move-to-line-cycle-in-source t ; move to end or beginning of source when reaching top or bottom of source.
+ helm-move-to-line-cycle-in-source nil ; move to end or beginning of source when reaching top or bottom of source.
  helm-buffers-fuzzy-matching t          ; fuzzy matching buffer names when non-nil
                                         ; useful in helm-mini that lists buffers
-
  )
 
-(add-to-list 'helm-sources-using-default-as-input 'helm-source-man-pages)
+
 
 (global-set-key (kbd "M-x") 'helm-M-x)
 (global-set-key (kbd "M-y") 'helm-show-kill-ring)
 (global-set-key (kbd "C-x b") 'helm-mini)
+(global-set-key (kbd "C-x C-b") 'helm-mini)
 (global-set-key (kbd "C-x C-f") 'helm-find-files)
 (global-set-key (kbd "C-h SPC") 'helm-all-mark-rings)
 (global-set-key (kbd "C-c h o") 'helm-occur)
-
-(global-set-key (kbd "C-c h C-c w") 'helm-wikipedia-suggest)
-
-(global-set-key (kbd "C-c h x") 'helm-register)
-;; (global-set-key (kbd "C-x r j") 'jump-to-register)
-
-(define-key 'help-command (kbd "C-f") 'helm-apropos)
-(define-key 'help-command (kbd "r") 'helm-info-emacs)
-(define-key 'help-command (kbd "C-l") 'helm-locate-library)
-
-;; use helm to list eshell history
-(add-hook 'eshell-mode-hook
-          #'(lambda ()
-              (define-key eshell-mode-map (kbd "M-l")  'helm-eshell-history)))
-
-;;; Save current position to mark ring
-(add-hook 'helm-goto-line-before-hook 'helm-save-current-pos-to-mark-ring)
-
-;; show minibuffer history with Helm
-(define-key minibuffer-local-map (kbd "M-p") 'helm-minibuffer-history)
-(define-key minibuffer-local-map (kbd "M-n") 'helm-minibuffer-history)
-
-(define-key global-map [remap find-tag] 'helm-etags-select)
-
-(define-key global-map [remap list-buffers] 'helm-buffers-list)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; PACKAGE: helm-swoop                ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Locate the helm-swoop folder to your path
-(require 'helm-swoop)
-
-;; Change the keybinds to whatever you like :)
-(global-set-key (kbd "C-c h o") 'helm-swoop)
-(global-set-key (kbd "C-c s") 'helm-multi-swoop-all)
-
-;; When doing isearch, hand the word over to helm-swoop
-(define-key isearch-mode-map (kbd "M-i") 'helm-swoop-from-isearch)
-
-;; From helm-swoop to helm-multi-swoop-all
-(define-key helm-swoop-map (kbd "M-i") 'helm-multi-swoop-all-from-helm-swoop)
-
-;; Save buffer when helm-multi-swoop-edit complete
-(setq helm-multi-swoop-edit-save t)
-
-;; If this value is t, split window inside the current window
-(setq helm-swoop-split-with-multiple-windows t)
-
-;; Split direcion. 'split-window-vertically or 'split-window-horizontally
-(setq helm-swoop-split-direction 'split-window-vertically)
-
-;; If nil, you can slightly boost invoke speed in exchange for text color
-(setq helm-swoop-speed-or-color t)
-
 (helm-mode 1)
+
+(avy-setup-default)
+(global-set-key (kbd "C-:") 'avy-goto-char)
 
 (require 'helm-gtags)
 
@@ -123,6 +128,7 @@
 (add-hook 'c++-mode-hook 'helm-gtags-mode)
 (add-hook 'java-mode-hook 'helm-gtags-mode)
 (add-hook 'asm-mode-hook 'helm-gtags-mode)
+(add-hook 'vala-mode-hook 'helm-gtags-mode)
 
 ;; key bindings
 (define-key helm-gtags-mode-map (kbd "C-c g a") 'helm-gtags-tags-in-this-function)
@@ -139,60 +145,83 @@
 (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
 (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history)
 
+
+(require 'ggtags)
+;(add-hook 'c-mode-common-hook
+;          (lambda ()
+;            (when (derived-mode-p 'c-mode 'c++-mode 'java-mode 'asm-mode)
+;              (ggtags-mode 1))))
+;(add-hook 'vala-mode-hook 'ggtags-mode)
+
+(define-key ggtags-mode-map (kbd "C-c g d") 'ggtags-find-definition)
+(define-key ggtags-mode-map (kbd "C-c g s") 'ggtags-find-other-symbol)
+(define-key ggtags-mode-map (kbd "C-c g h") 'ggtags-view-tag-history)
+(define-key ggtags-mode-map (kbd "C-c g r") 'ggtags-find-reference)
+(define-key ggtags-mode-map (kbd "C-c g f") 'ggtags-find-file)
+(define-key ggtags-mode-map (kbd "C-c g c") 'ggtags-create-tags)
+(define-key ggtags-mode-map (kbd "C-c g u") 'ggtags-update-tags)
+(define-key ggtags-mode-map (kbd "M-,") 'pop-tag-mark)
+
 (require 'projectile)
-(projectile-mode t)
+(projectile-global-mode)
+(setq projectile-enable-caching t)
+
+(require 'helm-projectile)
+(helm-projectile-on)
+(setq projectile-completion-system 'helm)
+(setq projectile-indexing-method 'alien)
 
 (require 'neotree)
 ;; ref: https://www.emacswiki.org/emacs/NeoTree
-(add-hook 'neotree-mode-hook
-            (lambda ()
-              (define-key evil-normal-state-local-map (kbd "TAB") 'neotree-enter)
-              (define-key evil-normal-state-local-map (kbd "SPC") 'neotree-enter)
-              (define-key evil-normal-state-local-map (kbd "q") 'neotree-hide)
-              (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)))
+;;(neotree-mode t)
 
 (setq projectile-switch-project-action 'neotree-projectile-action)
 
-;; company
-;(require 'company)
-;(add-hook 'after-init-hook 'global-company-mode)
-;(delete 'company-clang company-backends)
-;(add-to-list 'company-backends 'company-gtags)
+(recentf-mode 1)
+(setq recentf-max-saved-items 25)
+(global-set-key "\C-x\ \C-r" 'helm-recentf)
 
-;; company-c-headers
-;(add-to-list 'company-backends 'company-c-headers)
+;(ivy-mode 1)
+;(setq ivy-use-virtual-buffers t)
+(global-set-key "\C-s" 'swiper)
+(global-set-key (kbd "C-'") 'set-mark-command)
+(require 'smartparens-config)
+(smartparens-mode t)
 
-;(slime-setup '(slime-fancy slime-company))
-;(define-key company-active-map (kbd "\C-n") 'company-select-next)
-;(define-key company-active-map (kbd "\C-p") 'company-select-previous)
-;(define-key company-active-map (kbd "\C-d") 'company-show-doc-buffer)
-;(define-key company-active-map (kbd "M-.") 'company-show-location)
+(global-undo-tree-mode t)
+
+(require 'saveplace)
+(setq-default save-place t)
+(setq save-place-file "~/.emacs.d/saved-places")
+
+(require 'expand-region)
+(global-set-key (kbd "C-=") 'er/expand-region)
+
+(dtrt-indent-mode t)
+
+(require 'which-key)
+(which-key-mode t)
+
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'forward)
+
+(require 'org)
+(setq org-src-fontify-natively t)
 
 (require 'evil)
-(evil-mode t)
+(evil-mode 1)
 
-(require 'highlight)
-(require 'evil-search-highlight-persist)
-(global-evil-search-highlight-persist t)
+(add-hook 'neotree-mode-hook
+            (lambda ()
+	      (define-key evil-normal-state-local-map (kbd "TAB") 'neotree-enter)
+	      (define-key evil-normal-state-local-map (kbd "SPC") 'neotree-enter)
+              (define-key evil-normal-state-local-map (kbd "q") 'neotree-hide)
+              (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)))
 
+(setq show-trailing-whitespace t)
+(setq display-time-24hr-format t)
 
-(ac-config-default)
-
-(load-file (concat user-emacs-directory "/emacsSelfSettings.el"))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ansi-color-faces-vector
-   [default default default italic underline success warning error])
- '(ansi-color-names-vector
-   ["#2e3436" "#a40000" "#4e9a06" "#c4a000" "#204a87" "#5c3566" "#729fcf" "#eeeeec"])
- '(custom-enabled-themes (quote (tsdh-dark)))
- '(make-backup-files nil))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+(put 'upcase-region 'disabled nil)
+(put 'narrow-to-region 'disabled nil)
+(put 'narrow-to-page 'disabled nil)
+(put 'set-goal-column 'disabled nil)
