@@ -1,0 +1,154 @@
+1. 2016.05.15
+移动
+alt+r: 左上角，中间，左下角跳转
+ctrl+left/right: 按词跳转
+alt+g 2: 跳转到全文第2个字符
+alt+g+g 2: 跳转到全文第2行
+alt+g+Tab 2: 跳转到当前行的第2列
+
+ctrl+x ctrl+n: 上下移动时，以当前所在行为基准
+ctrl+u ctrl+x ctrl+n: 取消上述配置
+
+line-move-visual: 按屏幕显示的行还是按逻辑行移动C-n/C-p
+track-eol: 上下移动是，如果上行是在行尾，则到下行时，也在行尾
+
+删除
+alt+DEL	往左删除，按单词删除，在mini buffer中也能使用，用来删除路径很方便
+
+undo
+ctrl+/
+ctrl+x+u
+ctrl+_
+
+空行
+ctrl+o 从当前字符开始插入空行
+ctrl+x ctrl+o 删除连续的空行，只剩下一个
+
+cursor position information
+line-number-mode	在状态栏显示行位置信息
+column-number-mode	在状态栏显示列位置信息
+
+alt+= 显示行及字数等统计信息
+ctrl+x = 显示光标所在字符的编码
+
+hl-line-mode 行高亮模式
+C-u 6 4 C-u 1: insert 64 copies of '1'
+
+重复执行: Ctrl+x zzzzz
+
+miniBuffer
+1. 路径： /home/cylinc//etc/ ==> /etc
+   	 /etc/rc2.d/~/temp ==> ~/temp
+2. resize:
+   resize-mini-windows
+   max-mini-widnow-height
+3. scroll the display of other window:
+   alt+pageUp/pageDown
+
+help
+1. ctrl+h a topics
+2.
+
+the mark and the region
+1. shift+ctrl+n/p
+2. ctrl+x ctrl+x:exchange-point-and-mark 交换mark点的位置
+3. alt+h: mark-paragraph
+4. ctrl+x ctrl+p: mark-page
+5. ctrl+x h: mark-whole-buffer
+6. ctrl+u ctrl+x ctrl+x: exchange-point-and mark
+
+operation on the region
+1. ctrl+w: delete
+2. alt+w: copy
+3. convert case: ctrl+x ctrl+l/u
+4. undo changes with it: ctrl+u ctrl+/
+5. evalutate it as Lisp code: alt+x eval-region
+6. indent: ctrl+x tab
+7. save into a register: ctrl+x r s
+8. replace: alt+%
+
+Deletion:
+1. join two line: alt+^
+2. delete-horizontal-space: alt+\
+3. backward-kill-word: alt+DEL
+4. alt+k: kill to the end of the sentence
+5. alt+z char: kill throught the next ocurrence of char(zap-to-char) like d-f in vim
+
+yanking:
+1. ctrl+y: yank the last killed into buffer
+2. alt+y: replace the text just yanked with an earlier killed text
+3. view kill ring: Ctrl+h v kill-ring
+
+alt+x append-to-buffer
+alt+x prepend-to-buffer
+alt+x copy-to-buffer
+alt+x insert-buffer
+alt+x append-to-file
+
+rectangles:
+1. ctrl+x space: set rectangle mark
+2. ctrl+alt+space: set mark
+
+register:
+1. register can be 'a'(letter) or '1'(number),case sensitive
+2. alt+x view-register
+3. record position: ctrl+x r space r
+4. jump to position: ctrl+x r j r
+5. copy region: ctrl+x r s r
+6. insert from register: ctrl+x r i r
+7. alt+x append-to-register/prepend-to-regiter
+8. save rectangle: ctrl+x r r r
+9. insert from register: ctrl+x r i r
+10. save the state of the frame: ctrl+x r w r window-configuration-to-register
+11. save the state of all frame: ctrl+x r f r frame-configuration-to-register
+12. keep file name in register
+13. bookmark
+
+scroll:
+1. scroll-preserve-screen-position=t: move line to cursor other than move cursor to line
+2. recenter: ctrl+l
+3. center: ctrl+u ctrl+l
+4. narrowing:
+   narrow to region: ctrl+x n n(w=recover)
+   narrow to defun: ctrl+x n d
+5. view mode: alt+x view-buffer; q(quit),e(exit)
+   view-file
+6. text scale: ctrl+x ctrl+=/-/0(increase/decrease/restore)
+7. hightlight-changes-mode:  hightlight that were changed most recently
+8. hi-lock-mode: hightlight specified text
+   ctrl+x w h regexp RET face RET: hightlight word match
+   ctrl+x w r regexp RET: unhighlight
+   ctrl+x w l regexp RET face RET: highlight line that has word match
+   ctrl+x w .: hightlight word under cursor
+9. trailing white space:
+   delete-trailing-whitespace
+10. show unvisible symbols: whitespace-mode
+11. selective dislay accrod ident: ctrl+u num ctrl+x $
+12. display time in all mode lines: display-time-mode
+
+windows resize:
+1. ctrl+x +: equal windows
+
+(setq abc "123")
+(defun my-func()
+(interactive)	;alt+x callable
+(message abc)
+)
+
+(my-func)
+
+ctrl+h k: find key binding functions
+ctrl+x ctrl+e: execute current expression
+ctrl+h m: current mode loaded
+
+information to get
+1. remember the location last time edit
+2. go back to the last point
+
+
+
+this a a
+aa bb cc
+{
+this is a test
+}

@@ -133,7 +133,7 @@
 ;; key bindings
 (define-key helm-gtags-mode-map (kbd "C-c g a") 'helm-gtags-tags-in-this-function)
 (define-key helm-gtags-mode-map (kbd "C-c g r") 'helm-gtags-find-rtag)
-(define-key helm-gtags-mode-map (kbd "C-c g s") 'helm-gtags-find-symbol)
+(define-key helm-gtags-mode-map (kbd "C-c g s") 'helm-gtags-find-pattern)
 (define-key helm-gtags-mode-map (kbd "C-c g u") 'helm-gtags-update-tags)
 (define-key helm-gtags-mode-map (kbd "C-c g c") 'helm-gtags-create-tags)
 (define-key helm-gtags-mode-map (kbd "C-c g f") 'helm-gtags-find-files)
@@ -172,6 +172,7 @@
 (setq projectile-indexing-method 'alien)
 
 (require 'neotree)
+(setq neo-smart-open t)
 ;; ref: https://www.emacswiki.org/emacs/NeoTree
 ;;(neotree-mode t)
 
