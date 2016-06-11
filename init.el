@@ -5,7 +5,7 @@
 (global-hl-line-mode 1)
 (global-linum-mode 1)
 (column-number-mode 1)
-(global-highlight-changes-mode 1)
+(global-highlight-changes-mode -1)
 (global-hi-lock-mode)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
@@ -211,6 +211,9 @@
 
 (require 'evil)
 (evil-mode 1)
+;;https://bitbucket.org/lyro/evil/wiki/Home
+(modify-syntax-entry ?_ "w")
+(add-hook 'c-mode-common-hook #'(lambda () (modify-syntax-entry ?_ "w")))
 
 (add-hook 'neotree-mode-hook
             (lambda ()
