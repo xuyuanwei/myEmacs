@@ -17,6 +17,7 @@
       auto-save-file-name-transforms `((".*" , "~/.emacs.d/backup" t)))
 
 (setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
 (show-paren-mode t)
 (delete-selection-mode t)
 
@@ -41,6 +42,16 @@
     undo-tree
     which-key
     expand-region
+    company-c-headers
+    smart-tabs-mode
+    helm-gtags
+    avy
+    ggtags
+    imenu
+    helm-projectile
+    dtrt-indent
+    evil
+    neotree
     ;counsel
 ))
 
@@ -63,22 +74,25 @@
 
 
 (require 'company)
-(global-company-mode 1)
+(add-hook 'after-init-hook 'global-company-mode)
 (setq company-idle-delay 0.1)
+(setq company-backends (delete 'company-semantic company-backends))
+(add-to-list 'company-backends 'company-c-headers)  ; auto-completion for C/C++ headers
+;(add-to-list 'company-c-headers-path-system "/usr/include/c++/4.8/")
 
 (require 'hungry-delete)
 (hungry-delete-mode 1)
 
 (require 'helm)
 (require 'helm-config)
-(require 'helm-grep)
+;(require 'helm-grep)
 (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebihnd tab to do persistent action
 (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
 (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
 
-(define-key helm-grep-mode-map (kbd "<return>")  'helm-grep-mode-jump-other-window)
-(define-key helm-grep-mode-map (kbd "n")  'helm-grep-mode-jump-other-window-forward)
-(define-key helm-grep-mode-map (kbd "p")  'helm-grep-mode-jump-other-window-backward)
+;(define-key helm-grep-mode-map (kbd "<return>")  'helm-grep-mode-jump-other-window)
+;(define-key helm-grep-mode-map (kbd "n")  'helm-grep-mode-jump-other-window-forward)
+;(define-key helm-grep-mode-map (kbd "p")  'helm-grep-mode-jump-other-window-backward)
 
 (setq
  helm-scroll-amount 4 ; scroll 4 lines other window using M-<next>/M-<prior>
@@ -102,8 +116,8 @@
 (global-set-key (kbd "C-c h o") 'helm-occur)
 (helm-mode 1)
 
-(avy-setup-default)
-(global-set-key (kbd "C-:") 'avy-goto-char)
+;(avy-setup-default)
+;(global-set-key (kbd "C-:") 'avy-goto-char)
 
 (require 'helm-gtags)
 
@@ -173,6 +187,8 @@
 
 (require 'neotree)
 (setq neo-smart-open t)
+(setq neo-create-file-auto-open t)
+(setq neo-theme 'nerd)
 ;; ref: https://www.emacswiki.org/emacs/NeoTree
 ;;(neotree-mode t)
 
@@ -211,6 +227,7 @@
 
 (require 'evil)
 (evil-mode 1)
+
 ;;https://bitbucket.org/lyro/evil/wiki/Home
 (modify-syntax-entry ?_ "w")
 (add-hook 'c-mode-common-hook #'(lambda () (modify-syntax-entry ?_ "w")))
@@ -222,6 +239,9 @@
               (define-key evil-normal-state-local-map (kbd "q") 'neotree-hide)
               (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)))
 
+(add-to-list 'load-path "~/.emacs.d/plugins")
+;(require 'soft-tab)
+    
 (setq show-trailing-whitespace t)
 (setq display-time-24hr-format t)
 
