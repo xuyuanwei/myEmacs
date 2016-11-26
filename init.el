@@ -1,3 +1,6 @@
+(setq tramp-default-method "ssh")
+(setq tramp-ssh-controlmaster-options "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
+
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (package-initialize)
@@ -228,6 +231,7 @@
 (require 'evil)
 (evil-mode 1)
 
+(require 'cl)
 ;;https://bitbucket.org/lyro/evil/wiki/Home
 (modify-syntax-entry ?_ "w")
 (add-hook 'c-mode-common-hook #'(lambda () (modify-syntax-entry ?_ "w")))
